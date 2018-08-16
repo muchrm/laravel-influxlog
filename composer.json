@@ -1,6 +1,9 @@
 {
     "name": "muchrm/laravel-influxlog",
-    "type": "[library]",
+    "description": "Log your Laravel application errors to InfluxDB",
+    "keywords": ["laravel", "InfluxDB", "logging"],
+    "type": "library",
+    "license": "MIT",
     "authors": [
         {
             "name": "Pongpanot Chuaysakun",
