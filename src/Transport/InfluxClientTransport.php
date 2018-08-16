@@ -3,6 +3,7 @@ namespace Muchrm\InfluxLog\Transport;
 use Muchrm\InfluxLog\Message;
 use InfluxDB\Client;
 use InfluxDB\Point;
+use InfluxDB\Database;
 class InfluxClientTransport
 {
     const DEFAULT_HOST = "127.0.0.1";
@@ -50,7 +51,7 @@ class InfluxClientTransport
                 $message->getTimestamp()
             )
         );
-        $this->socketClient->writePoints($point);
+        $this->socketClient->writePoints($point,Database::PRECISION_MICROSECONDS);
         return 1;
     }
 }

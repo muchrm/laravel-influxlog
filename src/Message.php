@@ -30,7 +30,8 @@ class Message
      */
     public function __construct()
     {
-        $this->timestamp = round(microtime(true));
+        list($usec, $sec) = explode(' ', microtime());
+        $this->timestamp = sprintf('%d%06d', $sec, $usec*1000000);
         $this->host = gethostname();
         $this->level = 1; //ALERT
     }
@@ -102,18 +103,7 @@ class Message
 
     public function getTimestamp()
     {
-        return (float) $this->timestamp;
-    }
-
-    public function setTimestamp($timestamp)
-    {
-        if ($timestamp instanceof \DateTime || $timestamp instanceof \DateTimeInterface) {
-            $timestamp = $timestamp->format("U.u");
-        }
-
-        $this->timestamp = (float) $timestamp;
-
-        return $this;
+        return $this->timestamp;
     }
 
     public function getLevel()
