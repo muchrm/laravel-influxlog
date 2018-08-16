@@ -44,7 +44,7 @@ class InfluxClientTransport
         $point = array(
             new Point(
                 $this->mesure,
-                0.64,
+                $message->getLevel(),
                 $tags,
                 ['message' => $message->getMessage()],
                 $message->getTimestamp()
