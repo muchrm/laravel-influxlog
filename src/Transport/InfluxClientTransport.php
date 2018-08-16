@@ -8,7 +8,7 @@ class InfluxClientTransport
     const DEFAULT_HOST = "127.0.0.1";
     const DEFAULT_PORT = 8086;
     const DEFAULT_DATABASE = 'mydb';
-    const DEFAULT_MEASURE = 'user_log';
+    const DEFAULT_MEASURE = 'user_logs';
     /**
      * @var StreamSocketClient
      */
