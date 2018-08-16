@@ -11,7 +11,8 @@ class InfluxLog extends AbstractLogger implements LoggerInterface
         $this->transport = new InfluxClientTransport(
             config('influxlog.connection.host'),
             config('influxlog.connection.port'),
-            config('influxlog.connection.db')
+            config('influxlog.connection.db'),
+            config('influxlog.connection.measure')
         );
     }
     public function log($level, $rawMessage, array $context = array())
