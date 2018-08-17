@@ -1,4 +1,5 @@
 <?php
+
 abstract class AbstractTest extends Orchestra\Testbench\TestCase
 {
     /**
@@ -12,6 +13,7 @@ abstract class AbstractTest extends Orchestra\Testbench\TestCase
         $defaultLogSettings = require __DIR__.'/../config/influxlog.php';
         $app['config']->set('influxlog', $defaultLogSettings);
     }
+
     protected function getPackageProviders($app)
     {
         return ['Muchrm\InfluxLog\InfluxLogServiceProvider'];

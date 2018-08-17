@@ -1,7 +1,10 @@
 <?php
+
 namespace Muchrm\InfluxLog;
+
 use Illuminate\Support\Facades\Log;
 use Monolog\Handler\AbstractHandler;
+
 class InfluxLogHandler extends AbstractHandler
 {
     /**
@@ -19,9 +22,11 @@ class InfluxLogHandler extends AbstractHandler
                 $record['message'],
                 $record['context']
             );
+
             return false;
         } catch (\Exception $e) {
             Log::info('Could not log to InfluxLog.');
+
             return false;
         }
     }

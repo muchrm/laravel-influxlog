@@ -1,18 +1,22 @@
 <?php
+
 namespace Muchrm\InfluxLog;
 
 use Psr\Log\LogLevel;
 use RuntimeException;
-class Message
-{
 
+class Message implements MessageInterface
+{
     protected $host;
-    protected $message;
+    protected $shortMessage;
+    protected $fullMessage;
     protected $timestamp;
     protected $level;
-    protected $additionals = array();
+    protected $file;
+    protected $line;
+    protected $additionals = [];
 
-    private static $psrLevels = array(
+    private static $psrLevels = [
         LogLevel::EMERGENCY,    // 0
         LogLevel::ALERT,        // 1
         LogLevel::CRITICAL,     // 2
@@ -20,21 +24,22 @@ class Message
         LogLevel::WARNING,      // 4
         LogLevel::NOTICE,       // 5
         LogLevel::INFO,         // 6
-        LogLevel::DEBUG         // 7
-    );
+        LogLevel::DEBUG,         // 7
+    ];
 
     /**
-     * Creates a new message
+     * Creates a new message.
      *
      * Populates timestamp and host with sane default values
      */
     public function __construct()
     {
         list($usec, $sec) = explode(' ', microtime());
-        $this->timestamp = sprintf('%d%06d', $sec, $usec*1000000);
+        $this->timestamp = sprintf('%d%06d', $sec, $usec * 1000000);
         $this->host = gethostname();
         $this->level = 1; //ALERT
     }
+
     final public static function logLevelToPsr($level)
     {
         $origLevel = $level;
@@ -55,6 +60,7 @@ class Message
             sprintf("Cannot convert log-level '%s' to psr-style", $origLevel)
         );
     }
+
     final public static function logLevelToSyslog($level)
     {
         $origLevel = $level;
@@ -89,14 +95,26 @@ class Message
         return $this;
     }
 
-    public function getMessage()
+    public function getShortMessage()
     {
-        return $this->message;
+        return $this->shortMessage;
     }
 
-    public function setMessage($message)
+    public function setShortMessage($shortMessage)
     {
-        $this->message = $message;
+        $this->shortMessage = $shortMessage;
+
+        return $this;
+    }
+
+    public function getFullMessage()
+    {
+        return $this->fullMessage;
+    }
+
+    public function setFullMessage($fullMessage)
+    {
+        $this->fullMessage = $fullMessage;
 
         return $this;
     }
@@ -104,6 +122,16 @@ class Message
     public function getTimestamp()
     {
         return $this->timestamp;
+    }
+
+    public function setTimestamp($timestamp)
+    {
+        if ($timestamp instanceof \DateTime || $timestamp instanceof \DateTimeInterface) {
+            $timestamp = $timestamp->format('Uu');
+        }
+        $this->timestamp = $timestamp;
+
+        return $this;
     }
 
     public function getLevel()
@@ -119,6 +147,30 @@ class Message
     public function setLevel($level)
     {
         $this->level = self::logLevelToSyslog($level);
+
+        return $this;
+    }
+
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    public function setFile($file)
+    {
+        $this->file = $file;
+
+        return $this;
+    }
+
+    public function getLine()
+    {
+        return $this->line;
+    }
+
+    public function setLine($line)
+    {
+        $this->line = $line;
 
         return $this;
     }
@@ -142,9 +194,8 @@ class Message
     public function setAdditional($key, $value)
     {
         if (!$key) {
-            throw new RuntimeException("Additional field key cannot be empty");
+            throw new RuntimeException('Additional field key cannot be empty');
         }
-
         $this->additionals[$key] = $value;
 
         return $this;
@@ -157,18 +208,19 @@ class Message
 
     public function toArray()
     {
-        $message = array(
+        $message = [
             'host'          => $this->getHost(),
-            'message' => $this->getMessage(),
+            'short_message' => $this->getShortMessage(),
+            'full_message'  => $this->getFullMessage(),
             'level'         => $this->getSyslogLevel(),
             'timestamp'     => $this->getTimestamp(),
-        );
-
+            'file'          => $this->getFile(),
+            'line'          => $this->getLine(),
+        ];
         // add additionals
         foreach ($this->getAllAdditionals() as $key => $value) {
-            $message["_" . $key] = $value;
+            $message['_'.$key] = $value;
         }
-
         // return after filtering empty strings and null values
         return array_filter($message, function ($message) {
             return is_bool($message) || strlen($message);

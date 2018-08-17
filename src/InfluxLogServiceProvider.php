@@ -1,7 +1,10 @@
 <?php
+
 namespace Muchrm\InfluxLog;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+
 class InfluxLogServiceProvider extends ServiceProvider
 {
     /**
@@ -14,6 +17,7 @@ class InfluxLogServiceProvider extends ServiceProvider
             __DIR__.'/../config/influxlog.php' => $this->app->configPath().'/influxlog.php',
         ]);
     }
+
     /**
      * Register the service provider.
      */
@@ -24,6 +28,7 @@ class InfluxLogServiceProvider extends ServiceProvider
         $monoLog = Log::getMonolog();
         $monoLog->pushHandler(new InfluxLogHandler());
     }
+
     /**
      * Get the services provided by the provider.
      *
