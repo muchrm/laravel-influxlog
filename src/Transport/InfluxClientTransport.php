@@ -27,13 +27,24 @@ class InfluxClientTransport implements TransportInterface
      * @param mixed  $db
      * @param mixed  $mesure
      */
+    
     public function __construct($host = self::DEFAULT_HOST, $port = self::DEFAULT_PORT, $db = self::DEFAULT_DATABASE, $mesure = self::DEFAULT_MEASURE)
-    {
-        $client = new Client($host, $port);
-        $this->mesure = $mesure;
-        $this->socketClient = $client->selectDB($db);
+    {   
+        if ($this->stest($host, $port)){ 
+            $client = new Client($host, $port);
+            $this->mesure = $mesure;
+            $this->socketClient = $client->selectDB($db);
+        }
     }
-
+    function stest($ip, $portt) {
+        $fp = @fsockopen($ip, $portt, $errno, $errstr, 0.1);
+        if (!$fp) {
+            return false;
+        } else {
+            fclose($fp);
+            return true;
+        }
+    }
     /**
      * Sends a Message over this transport.
      *
@@ -43,6 +54,9 @@ class InfluxClientTransport implements TransportInterface
      */
     public function send(MessageInterface $message)
     {
+        if(!$this->socketClient){
+            return 0;
+        }
         $tags = array_merge([
                 'host' => $message->getHost(),
                 'level'=> $message->getLevel(),
